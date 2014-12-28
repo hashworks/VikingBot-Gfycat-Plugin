@@ -13,19 +13,24 @@ class gfycatPlugin extends basePlugin {
 	public function onMessage($from, $channel, $msg) {
 		preg_match_all("/http[s]{0,1}:\/\/\S*\.gif\S*/i", $msg, $matches);
 		$matches = array_splice($matches[0], 0, 5);
+		$webmUrls = array();
 		foreach ($matches as $link) {
 			$webmUrl = $this->getGfycatWebM($link);
 			if ($webmUrl !== false) {
-				$this->sendMessage($channel, "[GIF to WebM] " . $webmUrl);
+				$webmUrls[] = $webmUrl;
 			}
+		}
+		$string = join(' ', $webmUrls);
+		if (!empty($string)) {
+			$this->sendMessage($channel, "[GIF to WebM] " . $string);
 		}
 	}
 
 	private function getGfycatWebM($giflink) {
 		$data = @file_get_contents('http://upload.gfycat.com/transcode?fetchUrl=' . $giflink);
 		if (!empty($data) && ($data = json_decode($data, true)) !== NULL) {
-			if (isset($data['webmUrl']) && !empty($data['webmUrl'])) {
-				return $data['webmUrl'];
+			if (isset($data['webmUrl']) && !empty(trim($data['webmUrl']))) {
+				return trim($data['webmUrl']);
 			}
 		}
 		return false;

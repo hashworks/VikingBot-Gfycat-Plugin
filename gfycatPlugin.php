@@ -29,8 +29,8 @@ class gfycatPlugin extends basePlugin {
 	private function getGfycatWebM($giflink) {
 		$data = @file_get_contents('http://upload.gfycat.com/transcode?fetchUrl=' . $giflink);
 		if (!empty($data) && ($data = json_decode($data, true)) !== NULL) {
-			if (isset($data['webmUrl']) && !empty(trim($data['webmUrl']))) {
-				return trim($data['webmUrl']);
+			if (isset($data['gfyName']) && !empty(trim($data['gfyName']))) {
+				return 'https://gfycat.com/' . trim($data['gfyName']);
 			}
 		}
 		return false;
